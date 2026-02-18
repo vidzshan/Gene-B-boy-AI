@@ -1,0 +1,6 @@
+[1] Olympics.com, "Breaking at the Olympic Games Paris 2024," 2024. [Online]. Available: https://www.olympics.com/en/olympic-games/paris-2024/sports/breaking
+[2] (Placeholder for cultural/theoretical study on "play" and creativity in street dance—e.g., a book chapter or article; provide exact if available.)
+[3] D. Moltisanti, J. Wu, B. Dai, and C. C. Loy, "BRACE: The Breakdancing Competition Dataset for Dance Motion Synthesis," in Proc. European Conf. Computer Vision (ECCV), Oct. 2022, pp. 1-17. [Online]. Available: https://arxiv.org/abs/2207.10120 or https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136680321.pdf
+[4] Mr. Fresh and The Supreme Rockers, Breakdancing. Avon Books, 1984. [Online]. Available: https://archive.org/details/breakdancing0000fres
+[5] Z. Liu et al., "High-Performance Inference Graph Convolutional Networks for Skeleton-Based Action Recognition," arXiv:2305.18710v3, Jan. 2025. (HPI-GCN-OP core paper.)
+[6] S. Yan, Y. Xiong, and D. Lin, "Spatial Temporal Graph Convolutional Networks for Skeleton-Based Action Recognition," in Proc. AAAI Conf. Artificial Intelligence, Feb. 2018. [Online]. Available: https://arxiv.org/abs/1706.03762 (Foundational ST-GCN reference; matches previous link.)

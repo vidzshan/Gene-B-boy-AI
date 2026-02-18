@@ -3,7 +3,7 @@ work_dir: ./work_dir/ntu120/xsub/HPI_GCN_OP_joint0
 # feeder
 feeder: feeders.feeder_ntu.Feeder
 train_feeder_args:
-  data_path: ./data/ntu120/NTU120_CSub.npz
+  data_path: ./data/ntu120/NTU120_CSub.npz  # <--- ENSURE THIS FILE EXISTS
   split: train
   debug: False
   random_choose: False
@@ -32,23 +32,28 @@ model_args:
   num_point: 25
   num_person: 2
   graph: graph.ntu_rgb_d.Graph
-  deploy: True
+  deploy: False    # <--- Keep False during training
   dropout: 0.1
   Is_joint: True
   K: 0
   graph_args:
     labeling_mode: 'spatial'
 
-#optim
+# optim
 weight_decay: 0.0004
-base_lr: 0.1
+# SCALING RULE: Original Batch 128 -> LR 0.1. 
+# New Batch 16 is 8x smaller. LR should be ~0.0125.
+base_lr: 0.015      
 lr_decay_rate: 0.1
-step: [90, 100]
+step: [60, 80]      # <--- Reduced slightly for faster convergence
 warm_up_epoch: 5
 
 # training
 device: [0]
-batch_size: 128
-test_batch_size: 128
-num_epoch: 110
+# CRITICAL HARDWARE SETTINGS FOR LAPTOP
+batch_size: 16      # <--- CHANGED from 128 (Prevents Crash)
+test_batch_size: 16 # <--- CHANGED from 128
+num_epoch: 60       # <--- Reduced from 110 (Saves you ~2 days of heat)
 nesterov: True
+num_worker: 0       # <--- FIX: Must be 0 on Windows to prevent crash
+save_epoch: 0       # <--- FIX: Save checkpoints from the start

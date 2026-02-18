@@ -9,6 +9,9 @@ import random
 import shutil
 import sys
 import time
+import collections
+import collections.abc
+collections.Iterable = collections.abc.Iterable
 from collections import OrderedDict
 import traceback
 from sklearn.metrics import confusion_matrix
@@ -30,9 +33,9 @@ from tqdm import tqdm
 from torchlight.torchlight import DictAction
 from math import cos, pi
 
-import resource
-rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
-resource.setrlimit(resource.RLIMIT_NOFILE, (2048, rlimit[1]))
+# import resource
+# rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
+# resource.setrlimit(resource.RLIMIT_NOFILE, (2048, rlimit[1]))
 
 def init_seed(seed):
     torch.cuda.manual_seed_all(seed)
@@ -148,9 +151,8 @@ def get_parser():
         help='the arguments of model')
     parser.add_argument(
         '--weights',
-        # default=None,
-        # default='./test_weights/weight_ntu120/HPI_120CSub_OP_T9K9_j0/runs-94-46248.pt',
-        default='./test_weights/weight_ntu120/HPI_120CSub_OP_T9K9_j0/inferHPI_OP_K9.pt',
+        default=None,
+        # default='./test_weights/weight_ntu120/HPI_120CSub_OP_T9K9_j0/inferHPI_OP_K9.pt',
         help='the weights for network initialization')
 
     parser.add_argument(
@@ -221,13 +223,13 @@ class Processor():
                 arg.model_saved_name = os.path.join(arg.work_dir, 'runs')
                 if os.path.isdir(arg.model_saved_name):
                     print('log_dir: ', arg.model_saved_name, 'already exist')
-                    answer = input('delete it? y/n:')
-                    if answer == 'y':
-                        shutil.rmtree(arg.model_saved_name)
-                        print('Dir removed: ', arg.model_saved_name)
-                        input('Refresh the website of tensorboard by pressing any keys')
-                    else:
-                        print('Dir not removed: ', arg.model_saved_name)
+                    # answer = input('delete it? y/n:')
+                    # if answer == 'y':
+                    shutil.rmtree(arg.model_saved_name)
+                    print('Dir removed: ', arg.model_saved_name)
+                    #     input('Refresh the website of tensorboard by pressing any keys')
+                    # else:
+                    #     print('Dir not removed: ', arg.model_saved_name)
                 self.train_writer = SummaryWriter(os.path.join(arg.model_saved_name, 'train'), 'train')
                 self.val_writer = SummaryWriter(os.path.join(arg.model_saved_name, 'val'), 'val')
             else:

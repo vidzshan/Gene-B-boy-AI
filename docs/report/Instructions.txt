@@ -1,0 +1,67 @@
+You are acting as an expert academic advisor and technical editor for a 4th-year student at the Kanazawa Institute of Technology (KIT).
+
+**YOUR GOAL:** Create a "Project Design III Project Report" (in English) by synthesizing my uploaded files. You must combine the **Administrative Structure** of the university guidelines with the **Content Structure** of the "Sample Project Report" I uploaded.
+
+### 1. INPUT SOURCE PROTOCOL (How to handle my files)
+You must treat my inputs with the following strict hierarchy:
+
+* **1. FORMATTING AUTHORITY: The "Sample Project Report" (sample.pdf)**
+    * Follow this document's logical flow for the main body explicitly:
+      * *Chapter 1: Introduction*
+      * *Chapter 2: Existing Systems / Related Work*
+      * *Chapter 3: Methodology / System Configuration*
+      * *Chapter 4: Analysis Results*
+      * *Chapter 5: Discussion*
+      * *Chapter 6: Conclusion*
+    * Use this document's style for Figure captions and Equation formatting.
+* **2. SCOPE AUTHORITY: The "Preliminary Draft"**
+    * This determines *what* we actually did. If this contradicts the Notion notes, the Draft wins.
+* **3. DETAIL SOURCE: The "Notion Notes" & "Hyperlinks"**
+    * Use these to fill in the paragraphs with specific data, numbers, and settings.
+    * **References:** Convert my provided hyperlinks into a formal numbered Reference List (BibTeX/IEEE style) at the end of the report.
+* **4. VISUAL SOURCE: The Uploaded Images**
+    * I have uploaded the images. You must explicitly place them in the text using the tag **[INSERT IMAGE: filename]** and provide a formal caption (e.g., *Fig. 1 System Architecture*).
+
+### 2. STRICT REPORT STRUCTURE (The Master Outline)
+You must organize the final output in this exact order to satisfy KIT Guidelines and the Sample Report format:
+
+**PART A: ADMINISTRATIVE FRONT MATTER**
+1.  **Cover Page:**
+    * Type: "Project Design III Project Report" (Reiwa 7 / 2025 Academic Year).
+    * Title: [Must match my Preliminary Draft Title].
+    * Dept: Information Engineering.
+2.  **Abstract:** Strictly 1 page summary.
+3.  **Activity Distribution Table:** (Who did what).
+4.  **Project Implementation Record:**
+    * A table covering the 1-year timeline.
+    * **CRITICAL:** You must compare my *Early Notion Notes* vs. *Final Draft* to write a section on **"Modifications to the Theme"** (e.g., "Initially we planned X, but changed to Y because...").
+5.  **Table of Contents.**
+
+**PART B: MAIN REPORT BODY (Based on Sample Report Chapters)**
+* **Chapter 1: Introduction** (Background, Problem, Objective).
+* **Chapter 2: Related Work / Difference from Existing Systems** (Synthesize from Notion notes on competitors/previous studies).
+* **Chapter 3: Methodology / System Configuration**
+    * Describe the system architecture and implementation.
+    * *Action:* Insert relevant Architecture Images here with captions.
+    * Include mathematical formulas if present in notes (Format: Eq. 1).
+* **Chapter 4: Analysis / Results**
+    * Present the quantitative data.
+    * *Action:* Insert Graph/Chart Images here with captions.
+* **Chapter 5: Discussion** (Interpret the results - why did it happen?).
+* **Chapter 6: Conclusion** (Summary & Future Work).
+* **References** (Formatted list of my hyperlinks).
+
+### 3. WRITING INSTRUCTIONS
+* **Language:** Write the content in **ENGLISH** for this draft.
+* **Tone:** Formal Academic (Technical).
+* **Citation:** When using info from my Hyperlinks/Notion, insert a placeholder citation like `[1]`.
+Use relevant attached images for figgures.
+---
+
+### YOUR PROCESS
+**Step 1:** Analyze the **"Sample Project Report"** I uploaded to internalize the chapter headings and flow.
+**Step 2:** Analyze my **"Preliminary Draft"** to establish the subject matter.
+**Step 3:** Analyze the **Images** and **Notion Notes**.
+**Step 4:** Generate the report **Section by Section**. Start by asking: *"I have analyzed the inputs. Shall I start drafting Part A (Administrative Pages) or go straight to Chapter 1?"*
+
+Please confirm you understand these instructions.

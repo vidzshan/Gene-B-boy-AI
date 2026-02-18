@@ -1,0 +1,152 @@
+layer:
+  name: Improvisation_SLM
+  version: 1.0
+  role: >
+    前進(F)/後退(B)/停滞(S) の 3状態マルコフ連鎖として、
+    即興ダンスの「間合い」と「方向性」を制御する最小構成SLM。
+    BRACEなどのダンスデータセットから得られる音特徴・ポーズ系列の
+    エントロピーを参照して、softmax + 温度パラメータでゆらぎを調整し、
+    停滞(S)は熟練度ゲートで制御する。
+
+inputs:
+  from_layers:
+    - Genesys
+    - Stillness
+    - Motion
+  objects:
+    required:
+      - SceneState
+      - MotionState
+      - ResponsibilityVector
+    optional:
+      - RhythmField
+      - StillnessField
+      - BraceSegment     # BRACEから切り出した一つのダンスセグメント
+
+objects_defined:
+  SLMConfig:
+    purpose: >
+      即興3状態マルコフ連鎖のパラメータ定義。
+      「必要最低限の 9 パラメータ」で構成された小さなモデル。
+    fields:
+      # --- 3状態マルコフ連鎖の自由パラメータ 6個 ---
+      p_ff:
+        type: float
+        range: [0.0, 1.0]
+        description: FにいるときFを選ぶベース確率
+      p_fb:
+        type: float
+        range: [0.0, 1.0]
+        description: FにいるときBを選ぶベース確率
+      p_bf:
+        type: float
+        range: [0.0, 1.0]
+        description: BにいるときFを選ぶベース確率
+      p_bb:
+        type: float
+        range: [0.0, 1.0]
+        description: BにいるときBを選ぶベース確率
+      p_sf:
+        type: float
+        range: [0.0, 1.0]
+        description: SにいるときFを選ぶベース確率
+      p_sb:
+        type: float
+        range: [0.0, 1.0]
+        description: SにいるときBを選ぶベース確率
+
+      # 行の残りは 1 - (p_xy + p_xz) で S行きが決まるので自由度6
+
+      temperature_tau:
+        type: float
+        default: 1.0
+        description: >
+          softmaxの温度パラメータ。τ が大きいとランダム性が増し、
+          小さいと決定的になる。「ゆらぎ量」のノブ。
+
+      skill_level:
+        type: float
+        range: [0.0, 1.0]
+        default: 0.5
+        description: >
+          停滞(S)を意図的にコントロールできる熟練度。
+          高いほど「間合いで止まる」選択を安定して取れる。
+
+      learning_rate_eta:
+        type: float
+        range: [0.0, 1.0]
+        default: 0.1
+        description: >
+          フィードバックから遷移確率を更新するときの学習率。
+          大きいほど最近の経験に強く引きずられる。
+
+  SLMState:
+    purpose: >
+      現在の状態(F/B/S)と、内部時計・最近のエントロピーなど、
+      即興制御に必要な最小限の内部状態。
+    fields:
+      current_state:
+        type: enum(F, B, S)
+      internal_clock:
+        type: float
+        description: 拍位置や小節内の位相（0.0〜1.0など）
+      last_entropy:
+        type: float
+        description: 直近の音＋ポーズから計算されたエントロピー
+      step_index:
+        type: int
+        description: 即興ステップのカウンタ
+
+  SLMLog:
+    purpose: >
+      各ステップでの状態遷移・エントロピー・フィードバックを記録したログ。
+      後で学習や自己評価に使う。
+    fields:
+      history:
+        type: list[dict]
+        description: >
+          {t, state_from, state_to, entropy, reward, brace_segment_id, note} などを保存。
+
+processing:
+  high_level:
+    - name: compute_context_entropy
+      input:
+        - SceneState
+        - MotionState
+        - optional: BraceSegment
+      output:
+        - context_entropy
+      description: >
+        音特徴（例: メルスペクトル）とポーズの変化量から
+        シャノンエントロピーを計算し、その値で温度τや遷移重みを調整する。
+
+    - name: step_markov_slm
+      input:
+        - SLMConfig
+        - SLMState
+        - context_entropy
+      output:
+        - SLMState
+        - SLMLog
+      description: >
+        3×3 の遷移行列を構成 → context_entropy と temperature_tau でsoftmax調整 →
+        skill_levelで「S行き」の確率をゲート → 次状態をサンプルしてログに記録。
+
+interfaces:
+  to_layers:
+    Motion:
+      description: >
+        SLMState.current_state (F/B/S) を Motion層の「方向モード」に渡し、
+        ポーズ列の生成・選択時のバイアスとして使う。
+    external_datasets:
+      BRACE:
+        description: >
+          BRACEの keypoint系列 + audio特徴のウィンドウから
+          context_entropy を計算し、即興のゆらぎと間合い制御に反映する。
+
+notes:
+  design_intent: >
+    「前進・後退・停滞」という3択だけを扱う超小型モデルで、
+    GSMCのG/S/M/Cのうち「G⇨S⇨M部分の決定回路」を情報工学的に表現したもの。
+    BRACEのような複雑なブレイクダンスデータセットに対しても、
+    高次元なポーズは Motion層が担当し、このSLMは「方向と間合い」のみを制御する。

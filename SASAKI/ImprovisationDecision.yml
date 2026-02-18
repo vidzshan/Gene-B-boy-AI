@@ -1,0 +1,98 @@
+ImprovisationDecision:
+  version: 1.0
+  description: GSMCベースの即興3択（前進/後退/停滞）を、シャノンエントロピーで重み付けして選択するための最小構成モデル。
+  scale: micro
+
+  links_to_layers:
+    Genesys: 音・環境・シーンの初期条件からコンテキストエントロピーを計算。
+    Stillness: 「停滞(hold)」を意図的に選べる能力＝間合い制御の表現。
+    Motion: 選ばれた前進/後退/停滞を、具体的なポーズ・ステップ列に写像。
+    Coherence: 一連の選択列がどれだけ『筋の通った流れ』になっているかを事後評価。
+
+  choices:
+    - id: advance
+      jp_label: "前進"
+      description: "空間的 or 情報的に前へ進む・踏み込む。"
+
+    - id: retreat
+      jp_label: "後退"
+      description: "距離を取る・引く・間を空ける。"
+
+    - id: hold
+      jp_label: "停滞"
+      description: "止まる・溜める・間合いを作る。"
+
+  # 「理論上の基準」：1/3重ね合わせ
+  base_distribution:
+    advance: 0.3333
+    retreat: 0.3333
+    hold:    0.3333
+
+  entropy:
+    type: "shannon"
+    log_base: 2
+    source:
+      from_layer: "Genesys"
+      field: "SceneState.context_entropy"   # 例：音・映像特徴からH(t)計算した値
+      range: [0.0, 1.585]                   # log2(3) ≒ 1.585
+
+  policy:
+    mode: "stochastic"   # "argmax" にすれば決定論的にもできる
+
+    # H に応じて「どっち寄りにするか」を最小限のルールで定義
+    rules:
+      - id: "low_entropy_confident_flow"
+        condition: "H < 0.6"
+        weights:
+          advance: 0.45
+          retreat: 0.25
+          hold:    0.30
+        rationale: "コンテキストがハッキリしているときは前に出やすい。"
+
+      - id: "mid_entropy_superposition"
+        condition: "0.6 <= H < 1.1"
+        weights:
+          advance: 0.34
+          retreat: 0.33
+          hold:    0.33
+        rationale: "どれでも行ける余白状態＝ほぼ1/3重ね合わせ。"
+
+      - id: "high_entropy_listen_and_hold"
+        condition: "H >= 1.1"
+        weights:
+          advance: 0.25
+          retreat: 0.25
+          hold:    0.50
+        rationale: "先が読めないほど『一旦止まる／待つ』に確率を寄せる。"
+
+  responsibility_vector_mapping:
+    description: "選択された方向を ResponsibilityVector の更新にどう反映するか。"
+    components: ["self", "other", "field"]
+
+    # 「責任の矢」の最小限のルール表現
+    update_rules:
+      advance:
+        self:  "+"
+        other: "~"
+        field: "+"
+      retreat:
+        self:  "~"
+        other: "+"
+        field: "-"
+      hold:
+        self:  "+"
+        other: "+"
+        field: "~"
+
+  brace_integration:
+    inputs_from_brace:
+      - name: "brace.motion_features"
+        role: "現在の動きフェーズ・ブレイクポイントなど。"
+        used_for:
+          - "context_entropy_estimation"
+          - "rule_selection"
+
+    outputs_to_brace:
+      - name: "improv_decision.direction"
+        values: ["advance", "retreat", "hold"]
+        role: "次のポーズ生成や遷移の条件分岐に使う。"

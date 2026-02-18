@@ -1,0 +1,24 @@
+# IDE & System
+.idea/
+.gradio/
+__pycache__/
+*.pyc
+
+# Large Data & Weights (Keep these local, don't push to Git)
+brace-20251121T180837Z-1-001.zip
+pretrained_models/
+model/
+work_dir/
+data/
+discard/
+brace/
+
+# Logs & Temp
+audit_log*.txt
+*.glb
+animation/
+img/
+*.zip
+*.npz
+*.pkl
+*.pth
