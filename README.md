@@ -58,7 +58,7 @@ The system demonstrates high-fidelity synchronization and stylistic coherence.
 *Figure 1: The model detecting a "Drop" in the audio and transitioning from a freeze to a Power Move.*
 
 ![Toprock Generation](img/toprock.png)
-*Figure 2: Generated Toprock sequence showing footwork precision and upper-body coordination.*
+*Figure 2: AIGenerated Toprock sequence showing footwork precision and upper-body coordination.*
 
 *   **Pre-training**: NTU RGB+D 120 (56,000+ sequences).
 *   **Fine-tuning**: BRACE Dataset (Specialized Breaking patterns).
